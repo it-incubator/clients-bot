@@ -38,8 +38,11 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // If no session and not on /login, redirect to /login
-  if (!user && pathname !== '/login') {
+  const publicPaths = ['/login', '/reset-password', '/api/auth/callback'];
+  const isPublic = publicPaths.some((p) => pathname.startsWith(p));
+
+  // If no session and not on a public path, redirect to /login
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
